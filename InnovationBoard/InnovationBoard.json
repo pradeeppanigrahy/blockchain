@@ -1,0 +1,256 @@
+{
+  "ApplicationName": "InnovationBoard",
+  "DisplayName": "Global Innovation Board",
+  "Description": "This is a platform for everyone to submit innovative idea and get it approved",
+  "ApplicationRoles": [
+    {
+      "Name": "Reviewer",
+      "Description": "User that reviews the innovative idea"
+    },
+    {
+      "Name": "Approver",
+      "Description": "User that views all available innovative ideas"
+    },
+    {
+      "Name": "Innovator",
+      "Description": "User that signs off on the asset price"
+    }
+  ],
+  "Workflows": [
+    {
+      "Name": "Innovation",
+      "DisplayName": "Innovation",
+      "Description": "Handles the business logic for innovation approval process",
+      "Initiators": [ "Innovator" ],
+      "StartState":  "Submitted",
+      "Properties": [
+        {
+          "Name": "State",
+          "DisplayName": "State",
+          "Description": "Holds the state of the contract",
+          "Type": {
+            "Name": "state"
+          }
+        },
+        {
+          "Name": "Title",
+          "DisplayName": "Title",
+          "Description": "Describes the title of the idea",
+          "Type": {
+            "Name": "string"
+          }
+        },
+        {
+          "Name": "Description",
+          "DisplayName": "Description",
+          "Description": "Describes the idea",
+          "Type": {
+            "Name": "string"
+          }
+        },
+        {
+          "Name": "AdditionalDetails",
+          "DisplayName": "Additional Details",
+          "Description": "Additional Details",
+          "Type": {
+            "Name": "string"
+          }
+        },
+        {
+          "Name": "InstanceInnovator",
+          "DisplayName": "Idea Innovator",
+          "Description": "The creator of a particular idea",
+          "Type": {
+            "Name": "Innovator"
+          }
+        },
+        {
+          "Name": "InstanceReviewer",
+          "DisplayName": "Idea Reviewer",
+          "Description": "The reviewer of a particular idea",
+          "Type": {
+            "Name": "Reviewer"
+          }
+        },
+        {
+          "Name": "InstanceApprover",
+          "DisplayName": "Idea Approver",
+          "Description": "The approver of a particular idea",
+          "Type": {
+            "Name": "Approver"
+          }
+        }
+      ],
+      "Constructor": {
+        "Parameters": [
+          {
+            "Name": "title",
+            "DisplayName": "Title",
+            "Description": "Describes the title of the idea",
+            "Type": {
+              "Name": "string"
+            }
+          },
+          {
+            "Name": "description",
+            "DisplayName": "Description",
+            "Description": "Describes the idea",
+            "Type": {
+              "Name": "string"
+            }
+          },
+          {
+            "Name": "additionalDetails",
+            "DisplayName": "Additional Details",
+            "Description": "Additional Details",
+            "Type": {
+              "Name": "string"
+            }
+          }
+        ]
+      },
+      "Functions": [
+        {
+          "Name": "ModifyIdea",
+          "DisplayName": "Modify Idea",
+          "Description": "Modify the description/other attributes of this idea instance",
+          "Parameters": [
+            {
+              "Name": "description",
+              "DisplayName": "Description",
+              "Description": "Describes the idea",
+              "Type": {
+                "Name": "string"
+              }
+            },
+            {
+              "Name": "additionalDetails",
+              "DisplayName": "Additional Details",
+              "Description": "Additional Details",
+              "Type": {
+                "Name": "string"
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Terminate",
+          "DisplayName": "Terminate",
+          "Description": "Used to cancel this particular instance of innovation idea instance",
+          "Parameters": []
+        },
+        {
+          "Name": "RejectIdea",
+          "DisplayName": "RejectIdea",
+          "Description": "Reject the idea",
+          "Parameters": []
+        },
+        {
+          "Name": "ReviewDone",
+          "DisplayName": "ReviewDone",
+          "Description": "Review done for this particular idea",
+          "Parameters": []
+        },
+        {
+          "Name": "ApproveIdea",
+          "DisplayName": "Approve Idea",
+          "Description": "Approve idea",
+          "Parameters": []
+        }
+      ],
+      "States": [
+        {
+          "Name": "Submitted",
+          "DisplayName": "Submitted",
+          "Description": "The initial state of the innovation flow",
+          "PercentComplete": 20,
+          "Style": "Success",
+          "Transitions": [
+            {
+              "AllowedRoles": [],
+              "AllowedInstanceRoles": [ "InstanceInnovator" ],
+              "Description": "Cancels this instance of innovation flow",
+              "Function": "Terminate",
+              "NextStates": [ "Terminated" ],
+              "DisplayName": "Terminate Submission"
+            },
+            {
+              "AllowedRoles": [],
+              "AllowedInstanceRoles": [ "InstanceInnovator" ],
+              "Description": "Modify's this instance of innovation flow",
+              "Function": "ModifyIdea",
+              "NextStates": [ "Submitted" ],
+              "DisplayName": "Modify idea"
+            },
+            {
+              "AllowedRoles": [ "Reviewer" ],
+              "AllowedInstanceRoles": [],
+              "Description": "Review this idea",
+              "Function": "ReviewDone",
+              "NextStates": [ "ReviewDone" ],
+              "DisplayName": "Review Done"
+            },
+            {
+              "AllowedRoles": ["Reviewer"],
+              "AllowedInstanceRoles": [  ],
+              "Description": "Reject this idea",
+              "Function": "RejectIdea",
+              "NextStates": [ "Rejected" ],
+              "DisplayName": "Reject"
+            }
+          ]
+        },
+        {
+          "Name": "ReviewDone",
+          "DisplayName": "Review Done",
+          "Description": "Idea has been reviewed",
+          "PercentComplete": 60,
+          "Style": "Success",
+          "Transitions": [
+            {
+              "AllowedRoles": ["Approver"],
+              "AllowedInstanceRoles": [  ],
+              "Description": "Approve the idea",
+              "Function": "ApproveIdea",
+              "NextStates": [ "Approved" ],
+              "DisplayName": "Approve"
+            },
+            {
+              "AllowedRoles": ["Approver"],
+              "AllowedInstanceRoles": [  ],
+              "Description": "Reject the idea",
+              "Function": "RejectIdea",
+              "NextStates": [ "Rejected" ],
+              "DisplayName": "Reject"
+            }
+          ]
+        },
+        {
+          "Name": "Approved",
+          "DisplayName": "Approved",
+          "Description": "Idea has been Approved",
+          "PercentComplete": 100,
+          "Style": "Success",
+          "Transitions": []
+        },
+        {
+          "Name": "Terminated",
+          "DisplayName": "Terminated",
+          "Description": "Idea has been cancelled",
+          "PercentComplete": 100,
+          "Style": "Failure",
+          "Transitions": []
+        },
+       
+        {
+          "Name": "Rejected",
+          "DisplayName": "Rejected",
+          "Description": "Idea has been Rejected",
+          "PercentComplete": 100,
+          "Style": "Failure",
+          "Transitions": []
+        }
+      ]
+    }
+  ]
+}
